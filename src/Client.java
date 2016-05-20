@@ -17,6 +17,9 @@ public class Client implements Runnable{
     @Override
     public void run() {
         try{
+            //Catch user input
+            Scanner localInScanner = new Scanner(System.in);
+
             //Catch the input from the socket with the scanner
             Scanner inScanner = new Scanner(socket.getInputStream());
 
@@ -24,6 +27,11 @@ public class Client implements Runnable{
             PrintWriter outWriter = new PrintWriter(socket.getOutputStream());
 
             while(true){
+                String localInput = localInScanner.nextLine();
+
+                outWriter.println(localInput);
+                outWriter.flush();
+
                 if(inScanner.hasNext()){
                     //The input from any user to the server
                     String input = inScanner.nextLine();
