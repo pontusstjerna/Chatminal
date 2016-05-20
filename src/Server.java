@@ -3,7 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Created by pontu on 2016-05-20.
+ * Created by pontu on 2016-05-20 with help from http://www.dreamincode.net/forums/topic/262304-simple-client-and-server-chat-program/.
  */
 public class Server {
     public static void main(String[] args){
