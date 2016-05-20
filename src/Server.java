@@ -6,11 +6,10 @@ import java.util.Scanner;
 /**
  * Created by pontu on 2016-05-20.
  */
-public class Client implements Runnable{
+public class Server implements Runnable{
+    private Socket socket;
 
-    Socket socket;
-
-    public Client (Socket socket){
+    public Server (Socket socket){
         this.socket = socket;
     }
 
@@ -29,21 +28,24 @@ public class Client implements Runnable{
             boolean running = true;
 
             while(running){
-                String localInput = localInScanner.nextLine();
+               /* String localInput = localInScanner.nextLine();
 
                 if(localInput.equals("quit")){
                     running = false;
-                }
-
-                outWriter.println(localInput);
-                outWriter.flush();
+                }*/
 
                 if(inScanner.hasNext()){
                     //The input from any user to the server
                     String input = inScanner.nextLine();
 
                     //Tell clients that someone said something
-                    System.out.println(input);
+                    System.out.println("Someone said: " + input);
+
+                    //Message to the sender
+                    outWriter.println("You said: " + input);
+
+                    //Clear the output stream
+                    outWriter.flush();
                 }
             }
 
