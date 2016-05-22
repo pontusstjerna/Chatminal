@@ -1,57 +1,64 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  * Created by pontu on 2016-05-20.
  */
-public class Server implements Runnable{
-    private Socket socket;
+public class Server implements Broadcaster{
+    private int port;
+    private boolean running;
+    private List<ClientThread> clients;
 
-    public Server (Socket socket){
-        this.socket = socket;
+    public Server (int port){
+        this.port = port;
+        clients = new ArrayList<>();
+    }
+
+
+    public void start() {
+        running = true;
+
+        try{
+            ServerSocket serverSocket = new ServerSocket(port);
+
+            System.out.println("Server is up on IP " + serverSocket.getInetAddress() + " and port " + port + "!");
+            System.out.println("Waiting for clients... ");
+            while(running){
+
+                Socket socket = serverSocket.accept();
+
+                ClientThread client = new ClientThread(socket, this);
+                clients.add(client);
+
+                if(running){
+                    Thread t = new Thread(client);
+                    t.start();
+                }
+            }
+        }catch(IOException e){
+            System.out.println("Unable to start the server!");
+        }
     }
 
     @Override
-    public void run() {
-        try{
-            //Catch user input
-            Scanner localInScanner = new Scanner(System.in);
+    public synchronized void broadcast(String output) {
 
-            //Catch the input from the socket with the scanner
-            Scanner inScanner = new Scanner(socket.getInputStream());
+        //Write to server
+        System.out.println(output);
 
-            //Catch the output from the client
-            PrintWriter outWriter = new PrintWriter(socket.getOutputStream());
-
-            boolean running = true;
-
-            while(running){
-               /* String localInput = localInScanner.nextLine();
-
-                if(localInput.equals("quit")){
-                    running = false;
-                }*/
-
-                if(inScanner.hasNext()){
-                    //The input from any user to the server
-                    String input = inScanner.nextLine();
-
-                    //Tell clients that someone said something
-                    System.out.println("Someone said: " + input);
-
-                    //Message to the sender
-                    outWriter.println("You said: " + input);
-
-                    //Clear the output stream
-                    outWriter.flush();
-                }
-            }
-
-        }catch(IOException e){
-            System.out.println("Ooops! Could not read or write for this reason: ");
-            e.printStackTrace();
+        //Broadcast
+        for(ClientThread c : clients){
+            c.output(output);
         }
+    }
+
+    @Override
+    public void remove(Object o) {
+        clients.remove(o);
     }
 }
