@@ -44,14 +44,15 @@ public class Client implements Runnable{
 
                                 //The input from the server to the client
                                 String input = inScanner.nextLine();
-                                if(input.substring(userName.length()).equals("quit")){
-                                    running = false;
-                                }
+
+                                System.out.println(running);
 
                                 //Print the input received, if it's not your own message
                                 if(!input.substring(0, userName.length()).equals(userName)){
                                     System.out.println(input);
                                 }
+                            }else{ //If there is no input means we are disconnected
+                                running = false;
                             }
                         }
                     }catch(IOException e){
